@@ -1,3 +1,20 @@
+# Badge Sim Autostart on Raspberry Pi (labwc)
+
+The most reliable way to autostart the badge simulator on boot is via labwc's built-in autostart mechanism. This works better than systemd services (both system and user level) because it runs commands directly after the Wayland compositor has fully initialised, avoiding display environment timing issues.
+
+Create ~/.config/labwc/autostart with the following line:
+
+```bash/home/hugh/.local/share/virtualenvs/sim-BNHWup2C/bin/python /home/hugh/badge-2024-software/sim/run.py &```
+
+The & is required to background the process so labwc continues starting normally.
+
+## Why not systemd?
+
+System-level services (/etc/systemd/system/) start too early and can't access the Wayland socket. User-level services (~/.config/systemd/user/) have better timing but still struggle to reliably inherit the correct Wayland session environment (WAYLAND_DISPLAY, XDG_RUNTIME_DIR) on this setup. The labwc autostart file sidesteps all of this by running within the compositor's own context.
+
+> Note: If you update your pipenv environment and the virtualenv hash changes, update the path in the autostart file accordingly. Run pipenv --venv from the sim directory to get the current path.
+
+
 [![Build Micropython](https://github.com/emfcamp/badge-2024-software/actions/workflows/build.yml/badge.svg)](https://github.com/emfcamp/badge-2024-software/actions/workflows/build.yml)
 
 # Tildagon Firmware
