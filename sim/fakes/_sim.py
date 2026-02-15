@@ -406,17 +406,15 @@ class Simulation:
         # Scale the OLED surface
         scaled_oled = pygame.transform.scale(self._oled_surface, (scaled_oled_size, scaled_oled_size))
 
-        # Center it on the badge
-        center_x = 370
-        center_y = 366
-        off_x = center_x - (scaled_oled_size // 2)
-        off_y = center_y - (scaled_oled_size // 2)
+        # Center it on the screen (not on badge position)
+        off_x = (screen_w - scaled_oled_size) // 2
+        off_y = 0  # Top of screen since it fills height
         full.blit(scaled_oled, (off_x, off_y))
 
         # Fill screen with black background
         screen.fill((0, 0, 0))
         # Blit the badge centered
-        screen.blit(full, (offset_x, offset_y))
+        screen.blit(full, (0, 0))
         pygame.display.flip()
 
     def render_gui_lazy(self):
