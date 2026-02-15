@@ -12,10 +12,25 @@ try:
 except ImportError:
     print("Info: No custom config.py found")
 
+# Initialize pygame first
 pygame.init()
-screen_w = 733
-screen_h = 733
-screen = pygame.display.set_mode(size=(screen_w, screen_h))
+
+# Get display info for fullscreen
+display_info = pygame.display.Info()
+screen_w = display_info.current_w
+screen_h = display_info.current_h
+
+# Create fullscreen window
+screen = pygame.display.set_mode((screen_w, screen_h), pygame.FULLSCREEN | pygame.NOFRAME)
+
+# Original badge dimensions
+badge_w = 733
+badge_h = 733
+
+# Calculate offset to center the badge
+offset_x = (screen_w - badge_w) // 2
+offset_y = (screen_h - badge_h) // 2
+
 simpath = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 bgpath = os.path.join(simpath, "background.png")
 background = pygame.image.load(bgpath)
@@ -127,7 +142,8 @@ class Input:
 
 
 class ButtonsInput(Input):
-    POSITIONS = [
+    # Original positions
+    _POSITIONS_BASE = [
         (370, 33),
         (670, 190),
         (670, 540),
@@ -135,6 +151,9 @@ class ButtonsInput(Input):
         (75, 540),
         (85, 190),
     ]
+    
+    # Adjust for centering - will be set after display init
+    POSITIONS = _POSITIONS_BASE
 
     # Default keyboard mapping
     button_map = {
@@ -389,7 +408,10 @@ class Simulation:
         off_y = center_y - (240 // 2)
         full.blit(self._oled_surface, (off_x, off_y))
 
-        screen.blit(full, (0, 0))
+        # Fill screen with black background
+        screen.fill((0, 0, 0))
+        # Blit the badge centered
+        screen.blit(full, (offset_x, offset_y))
         pygame.display.flip()
 
     def render_gui_lazy(self):
@@ -569,3 +591,5 @@ def get_button_state(left):
     elif sub[2]:
         return +1
     return 0
+
+ButtonsInput.POSITIONS = [(x + offset_x, y + offset_y) for x, y in ButtonsInput._POSITIONS_BASE]
