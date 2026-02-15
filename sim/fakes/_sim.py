@@ -291,9 +291,7 @@ class Simulation:
         # corresponding surface when there was no change to its render data.
         self._led_surface = pygame.Surface((screen_w, screen_h), flags=pygame.SRCALPHA)
         self._led_surface_dirty = True
-        self._button_surface = pygame.Surface(
-            (screen_w, screen_h), flags=pygame.SRCALPHA
-        )
+        self._button_surface = pygame.Surface((screen_w, screen_h), flags=pygame.SRCALPHA)
         self._button_surface_dirty = True
         self._full_surface = pygame.Surface((screen_w, screen_h), flags=pygame.SRCALPHA)
         self._oled_surface = pygame.Surface((240, 240), flags=pygame.SRCALPHA)
