@@ -8,7 +8,7 @@ import sys
 # GPIO button support
 try:
     import RPi.GPIO as GPIO
-    GPIO_PINS = [10, 9, 11, 8, 7, 5]
+    GPIO_PINS = [0, 5, 6, 13, 19, 26]
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(False)
     for pin in GPIO_PINS:
