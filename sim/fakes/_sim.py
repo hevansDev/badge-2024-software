@@ -5,6 +5,20 @@ import time
 import itertools
 import sys
 
+# GPIO button support
+try:
+    import RPi.GPIO as GPIO
+    GPIO_PINS = [17, 27, 22, 23, 24, 25]
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setwarnings(False)
+    for pin in GPIO_PINS:
+        GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    GPIO_ENABLED = True
+    print(f"✓ GPIO buttons enabled (pins {GPIO_PINS})")
+except:
+    GPIO_ENABLED = False
+    print("ℹ GPIO not available - using on-screen buttons")
+
 import pygame
 
 try:
@@ -81,10 +95,14 @@ class Input:
         self._mouse_held = None
 
     def state(self):
-        s = [ss for ss in self._state]
-        if self._mouse_held is not None:
-            s[self._mouse_held] = True
-        return s
+            # Use GPIO if available, otherwise use on-screen buttons
+            if GPIO_ENABLED:
+                return [GPIO.input(pin) == GPIO.LOW for pin in GPIO_PINS]
+            
+            s = [ss for ss in self._state]
+            if self._mouse_held is not None:
+                s[self._mouse_held] = True
+            return s
 
     def _mouse_coords_to_id(self, mouse_x, mouse_y):
         for i, (x, y) in enumerate(self.POSITIONS):
@@ -113,6 +131,8 @@ class Input:
             if ev.type == pygame.KEYUP:
                 self._mouse_held = None
         if ev.type == pygame.QUIT:
+            if GPIO_ENABLED:
+                GPIO.cleanup()
             pygame.quit()
             sys.exit()
         if ev.type == pygame.USEREVENT:
