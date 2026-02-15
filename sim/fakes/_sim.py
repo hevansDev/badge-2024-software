@@ -400,13 +400,20 @@ class Simulation:
             self._button_surface_dirty = False
             full.blit(self._button_surface, (0, 0))
 
-        # Always blit oled. Its' alpha blending is designed in a way that it
-        # can be repeatedly applied to a dirty _full_surface without artifacts.
+        # Always blit oled. Scale it to fill screen height.
+        # Calculate scale so the 240px OLED fills the screen height
+        oled_scale = screen_h / 240
+        scaled_oled_size = int(240 * oled_scale)
+
+        # Scale the OLED surface
+        scaled_oled = pygame.transform.scale(self._oled_surface, (scaled_oled_size, scaled_oled_size))
+
+        # Center it on the badge
         center_x = 370
         center_y = 366
-        off_x = center_x - (240 // 2)
-        off_y = center_y - (240 // 2)
-        full.blit(self._oled_surface, (off_x, off_y))
+        off_x = center_x - (scaled_oled_size // 2)
+        off_y = center_y - (scaled_oled_size // 2)
+        full.blit(scaled_oled, (off_x, off_y))
 
         # Fill screen with black background
         screen.fill((0, 0, 0))
