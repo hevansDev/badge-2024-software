@@ -398,17 +398,18 @@ class Simulation:
             self._button_surface_dirty = False
             full.blit(self._button_surface, (0, 0))
 
-        # Always blit oled. Scale it to fill screen height.
-        # Calculate scale so the 240px OLED fills the screen height
-        oled_scale = screen_h / 240
+        # Always blit oled. Scale it to fill screen height with overscan
+        # Add a few pixels of overscan (adjust the 6 to your preference)
+        overscan = 6
+        oled_scale = (screen_h + overscan) / 240
         scaled_oled_size = int(240 * oled_scale)
 
         # Scale the OLED surface
         scaled_oled = pygame.transform.scale(self._oled_surface, (scaled_oled_size, scaled_oled_size))
 
-        # Center it on the screen (not on badge position)
+        # Center it on the screen with negative offset to crop top/bottom
         off_x = (screen_w - scaled_oled_size) // 2
-        off_y = 0  # Top of screen since it fills height
+        off_y = -(overscan // 2)  # Negative offset to crop equally top and bottom
         full.blit(scaled_oled, (off_x, off_y))
 
         # Fill screen with black background
