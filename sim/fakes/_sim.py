@@ -400,7 +400,7 @@ class Simulation:
 
         # Always blit oled. Scale it to fill screen height with overscan
         # Add a few pixels of overscan (adjust the 6 to your preference)
-        overscan = 6
+        overscan = 12
         oled_scale = (screen_h + overscan) / 240
         scaled_oled_size = int(240 * oled_scale)
 
