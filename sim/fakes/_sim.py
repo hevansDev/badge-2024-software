@@ -44,6 +44,17 @@ if GPIO_ENABLED:
     except Exception as e:
         print(f"⚠ Restart button setup failed: {e}")
 
+try:
+    from rpi_ws281x import PixelStrip, Color as WS_Color
+    _ws_strip = PixelStrip(12, 18, 800000, 10, False, 255, 0)
+    _ws_strip.begin()
+    _WS_AVAILABLE = True
+    print("✓ WS2812B strip initialized (12 LEDs on GPIO18)")
+except Exception as _ws_err:
+    _ws_strip = None
+    _WS_AVAILABLE = False
+    print(f"ℹ WS2812B not available: {_ws_err}")
+
 import pygame
 
 try:
@@ -158,6 +169,10 @@ class Input:
         if ev.type == pygame.QUIT:
             if GPIO_ENABLED:
                 GPIO.cleanup()
+            if _WS_AVAILABLE and _ws_strip is not None:
+                for i in range(12):
+                    _ws_strip.setPixelColor(i, WS_Color(0, 0, 0))
+                _ws_strip.show()
             pygame.quit()
             sys.exit()
         if ev.type == pygame.USEREVENT:
@@ -444,7 +459,7 @@ class Simulation:
             full.blit(self._button_surface, (0, 0))
 
         # Always blit oled. Scale it to fill screen height with overscan
-        # Add a few pixels of overscan (adjust the 6 to your preference)
+        # Add a few pixels of overscan
         overscan = 12
         oled_scale = (screen_h + overscan) / 240
         scaled_oled_size = int(240 * oled_scale)
@@ -494,6 +509,13 @@ class Simulation:
             if _sim.led_state[i] != s:
                 _sim.led_state[i] = s
                 self._led_surface_dirty = True
+
+        # Mirror top ring (indices 1-12) to physical WS2812B strip
+        if _WS_AVAILABLE and _ws_strip is not None:
+            for i in range(12):
+                r, g, b = _sim.led_state[i + 1]
+                _ws_strip.setPixelColor(i, WS_Color(int(r), int(g), int(b)))
+            _ws_strip.show()
 
 
 _sim = Simulation()
