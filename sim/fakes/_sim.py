@@ -32,7 +32,7 @@ if GPIO_ENABLED:
 
         GPIO.add_event_detect(
             RESTART_PIN,
-            GPIO.FALLING,
+            GPIO.BOTH,
             callback=restart_sim,
             bouncetime=1000
         )
