@@ -19,7 +19,7 @@ except:
     GPIO_ENABLED = False
     print("ℹ GPIO not available - using on-screen buttons")
 
-RESTART_PIN = 16
+RESTART_PIN = 24
 if GPIO_ENABLED:
     try:
         GPIO.cleanup(RESTART_PIN)  # Release pin if held from previous run
