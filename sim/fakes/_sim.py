@@ -37,7 +37,7 @@ if GPIO_ENABLED:
             bouncetime=1000
         )
         print(f"✓ Restart button enabled (GPIO{RESTART_PIN})")
-    except Exception as e:
+    except RuntimeError as e:
         print(f"⚠ Restart button setup failed: {e}")
 
 import pygame
