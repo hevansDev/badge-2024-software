@@ -20,9 +20,9 @@ except:
     print("ℹ GPIO not available - using on-screen buttons")
 
 RESTART_PIN = 16
-
 if GPIO_ENABLED:
     try:
+        GPIO.cleanup(RESTART_PIN)  # Release pin if held from previous run
         GPIO.setup(RESTART_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
         def restart_sim(channel):
