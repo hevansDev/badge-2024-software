@@ -95,14 +95,14 @@ class Input:
         self._mouse_held = None
 
     def state(self):
-            # Use GPIO if available, otherwise use on-screen buttons
-            if GPIO_ENABLED:
-                return [GPIO.input(pin) == GPIO.LOW for pin in GPIO_PINS]
-            
-            s = [ss for ss in self._state]
-            if self._mouse_held is not None:
-                s[self._mouse_held] = True
-            return s
+        # Use GPIO if available, otherwise use on-screen buttons
+        if GPIO_ENABLED:
+            return [GPIO.input(pin) == GPIO.HIGH for pin in GPIO_PINS]
+        
+        s = [ss for ss in self._state]
+        if self._mouse_held is not None:
+            s[self._mouse_held] = True
+        return s
 
     def _mouse_coords_to_id(self, mouse_x, mouse_y):
         for i, (x, y) in enumerate(self.POSITIONS):
