@@ -19,25 +19,29 @@ except:
     GPIO_ENABLED = False
     print("ℹ GPIO not available - using on-screen buttons")
 
+import threading
+
 RESTART_PIN = 24
+
 if GPIO_ENABLED:
     try:
-        GPIO.cleanup(RESTART_PIN)  # Release pin if held from previous run
         GPIO.setup(RESTART_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-        def restart_sim(channel):
-            print("Restart button pressed — restarting...")
-            GPIO.cleanup()
-            os.execv(sys.executable, [sys.executable] + sys.argv)
+        def restart_watcher():
+            prev = GPIO.input(RESTART_PIN)
+            while True:
+                current = GPIO.input(RESTART_PIN)
+                if prev == 1 and current == 0:  # FALLING edge
+                    print("Restart button pressed — restarting...")
+                    GPIO.cleanup()
+                    os.execv(sys.executable, [sys.executable] + sys.argv)
+                prev = current
+                time.sleep(0.05)
 
-        GPIO.add_event_detect(
-            RESTART_PIN,
-            GPIO.BOTH,
-            callback=restart_sim,
-            bouncetime=1000
-        )
+        t = threading.Thread(target=restart_watcher, daemon=True)
+        t.start()
         print(f"✓ Restart button enabled (GPIO{RESTART_PIN})")
-    except RuntimeError as e:
+    except Exception as e:
         print(f"⚠ Restart button setup failed: {e}")
 
 import pygame
