@@ -19,6 +19,24 @@ except:
     GPIO_ENABLED = False
     print("ℹ GPIO not available - using on-screen buttons")
 
+RESTART_PIN = 16
+
+if GPIO_ENABLED:
+    GPIO.setup(RESTART_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+    def restart_sim(channel):
+        print("Restart button pressed — restarting...")
+        GPIO.cleanup()
+        os.execv(sys.executable, [sys.executable] + sys.argv)
+
+    GPIO.add_event_detect(
+        RESTART_PIN,
+        GPIO.FALLING,
+        callback=restart_sim,
+        bouncetime=1000
+    )
+    print(f"✓ Restart button enabled (GPIO{RESTART_PIN})")
+
 import pygame
 
 try:
