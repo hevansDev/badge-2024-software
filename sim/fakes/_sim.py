@@ -45,9 +45,9 @@ if GPIO_ENABLED:
         print(f"⚠ Restart button setup failed: {e}")
 
 try:
-    from rpi_ws281x import PixelStrip, Color as WS_Color
-    _ws_strip = PixelStrip(12, 18, 800000, 10, False, 255, 0)
-    _ws_strip.begin()
+    import board
+    import neopixel
+    _ws_strip = neopixel.NeoPixel(board.D18, 12, brightness=1.0, auto_write=False, pixel_order=neopixel.GRB)
     _WS_AVAILABLE = True
     print("✓ WS2812B strip initialized (12 LEDs on GPIO18)")
 except Exception as _ws_err:
@@ -170,8 +170,7 @@ class Input:
             if GPIO_ENABLED:
                 GPIO.cleanup()
             if _WS_AVAILABLE and _ws_strip is not None:
-                for i in range(12):
-                    _ws_strip.setPixelColor(i, WS_Color(0, 0, 0))
+                _ws_strip.fill((0, 0, 0))
                 _ws_strip.show()
             pygame.quit()
             sys.exit()
@@ -514,7 +513,7 @@ class Simulation:
         if _WS_AVAILABLE and _ws_strip is not None:
             for i in range(12):
                 r, g, b = _sim.led_state[i + 1]
-                _ws_strip.setPixelColor(i, WS_Color(int(r), int(g), int(b)))
+                _ws_strip[i] = (int(r), int(g), int(b))
             _ws_strip.show()
 
 
