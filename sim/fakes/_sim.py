@@ -501,6 +501,10 @@ class Simulation:
         if not _ws_initialised:
             _ws_initialised = True
             try:
+                import sys as _sys
+                for _m in list(_sys.modules.keys()):
+                    if 'neopixel' in _m or 'board' in _m:
+                        del _sys.modules[_m]
                 import board
                 import neopixel
                 _ws_strip = neopixel.NeoPixel(board.D18, 12, brightness=1.0, auto_write=False, pixel_order=neopixel.GRB)
