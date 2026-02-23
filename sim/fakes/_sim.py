@@ -44,16 +44,9 @@ if GPIO_ENABLED:
     except Exception as e:
         print(f"⚠ Restart button setup failed: {e}")
 
-try:
-    import board
-    import neopixel
-    _ws_strip = neopixel.NeoPixel(board.D18, 12, brightness=1.0, auto_write=False, pixel_order=neopixel.GRB)
-    _WS_AVAILABLE = True
-    print("✓ WS2812B strip initialized (12 LEDs on GPIO18)")
-except Exception as _ws_err:
-    _ws_strip = None
-    _WS_AVAILABLE = False
-    print(f"ℹ WS2812B not available: {_ws_err}")
+_ws_strip = None
+_WS_AVAILABLE = False
+_ws_initialised = False
 
 import pygame
 
@@ -504,12 +497,24 @@ class Simulation:
         self.led_state_buf[ix] = (r * 255, g * 255, b * 255)
 
     def leds_update(self):
+        global _ws_strip, _WS_AVAILABLE, _ws_initialised
+        if not _ws_initialised:
+            _ws_initialised = True
+            try:
+                import board
+                import neopixel
+                _ws_strip = neopixel.NeoPixel(board.D18, 12, brightness=1.0, auto_write=False, pixel_order=neopixel.GRB)
+                _WS_AVAILABLE = True
+                print("✓ WS2812B strip initialized (12 LEDs on GPIO18)")
+            except Exception as _ws_err:
+                _WS_AVAILABLE = False
+                print(f"ℹ WS2812B not available: {_ws_err}")
+
         for i, s in enumerate(_sim.led_state_buf):
             if _sim.led_state[i] != s:
                 _sim.led_state[i] = s
                 self._led_surface_dirty = True
 
-        # Mirror top ring (indices 1-12) to physical WS2812B strip
         if _WS_AVAILABLE and _ws_strip is not None:
             for i in range(12):
                 r, g, b = _sim.led_state[i + 1]
