@@ -1,3 +1,5 @@
+import importlib
+
 import ctx
 import math
 import os
@@ -501,11 +503,13 @@ class Simulation:
         if not _ws_initialised:
             _ws_initialised = True
             try:
-                import sys as _sys
-                import importlib
-                for _m in list(_sys.modules.keys()):
-                    if 'neopixel' in _m or 'board' in _m:
-                        del _sys.modules[_m]
+                import importlib.util as _ilu
+                _spec = _ilu.spec_from_file_location(
+                    "adafruit_neopixel",
+                    "/home/hugh/.local/share/virtualenvs/sim-BNHWup2C/lib/python3.10/site-packages/neopixel.py"
+                )
+                neopixel = _ilu.module_from_spec(_spec)
+                _spec.loader.exec_module(neopixel)
                 import board
                 neopixel = importlib.import_module('neopixel')
                 print("neopixel loaded from:", neopixel.__file__)
