@@ -502,12 +502,13 @@ class Simulation:
             _ws_initialised = True
             try:
                 import sys as _sys
-                print("modules before clear:", [k for k in _sys.modules.keys() if 'neopixel' in k or 'board' in k])
+                import importlib
                 for _m in list(_sys.modules.keys()):
                     if 'neopixel' in _m or 'board' in _m:
                         del _sys.modules[_m]
                 import board
-                import neopixel
+                neopixel = importlib.import_module('neopixel')
+                print("neopixel loaded from:", neopixel.__file__)
                 _ws_strip = neopixel.NeoPixel(board.D18, 12, brightness=1.0, auto_write=False, pixel_order=neopixel.GRB)
                 _WS_AVAILABLE = True
                 print("✓ WS2812B strip initialized (12 LEDs on GPIO18)")
