@@ -502,6 +502,7 @@ class Simulation:
             _ws_initialised = True
             try:
                 import sys as _sys
+                print("modules before clear:", [k for k in _sys.modules.keys() if 'neopixel' in k or 'board' in k])
                 for _m in list(_sys.modules.keys()):
                     if 'neopixel' in _m or 'board' in _m:
                         del _sys.modules[_m]
