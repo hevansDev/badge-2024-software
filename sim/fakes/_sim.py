@@ -508,12 +508,10 @@ class Simulation:
                     "adafruit_neopixel",
                     "/home/hugh/.local/share/virtualenvs/sim-BNHWup2C/lib/python3.10/site-packages/neopixel.py"
                 )
-                neopixel = _ilu.module_from_spec(_spec)
-                _spec.loader.exec_module(neopixel)
-                import board
-                neopixel = importlib.import_module('neopixel')
-                print("neopixel loaded from:", neopixel.__file__)
-                _ws_strip = neopixel.NeoPixel(board.D18, 12, brightness=1.0, auto_write=False, pixel_order=neopixel.GRB)
+                _np = _ilu.module_from_spec(_spec)
+                _spec.loader.exec_module(_np)
+                import board as _board
+                _ws_strip = _np.NeoPixel(_board.D18, 12, brightness=1.0, auto_write=False, pixel_order=_np.GRB)
                 _WS_AVAILABLE = True
                 print("✓ WS2812B strip initialized (12 LEDs on GPIO18)")
             except Exception as _ws_err:
