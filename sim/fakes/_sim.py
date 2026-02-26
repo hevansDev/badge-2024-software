@@ -478,7 +478,7 @@ class Simulation:
         GUI itself. As with render_gui_now, the OLED surface is not rendered by
         this call.
         """
-        target_fps = 60.0
+        target_fps = 30.0
         d = 1 / target_fps
 
         if self.last_gui_render is None:
@@ -640,7 +640,7 @@ def display_update(subctx):
     fb = mem_data[fb_offset:fb_offset + fb_size]
 
     _sim.render_display(fb)
-    _sim.render_gui_now()
+    _sim.render_gui_lazy()
 
     global SCREENSHOT
     global SCREENSHOT_DELAY
